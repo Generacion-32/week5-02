@@ -1,5 +1,6 @@
 const request = require("supertest")
 const app = require('../app')
+const Student = require("../models/Student")
 require('../models')
 
 const BASE_URL = '/courses'
@@ -59,6 +60,36 @@ test("PUT -> '/courses/:id', should return statusCodew 200, res.body to be defin
   expect(res.status).toBe(200)
   expect(res.body).toBeDefined()
   expect(res.body.name).toBe('Analisis')
+})
+
+test("Post -> '/courses:id/students', should return status code 200 and ...", async () => {
+
+  const student = {
+    firstName: "Jonatahn",
+    lastName: "Hernandez",
+    birthday: "2022-10-23",
+    program: "Ingenieria"
+  }
+
+  const jonatahn = await Student.create(student)
+
+  const res = await request(app)
+    .post(`${BASE_URL}/${coursesId}/students`)
+    .send([jonatahn.id])
+
+  console.log(res.body);
+
+  expect(res.statusCode).toBe(200)
+  expect(res.body).toBeDefined()
+  expect(res.body).toHaveLength(1)
+  expect(res.body.length).toBe(1)
+  expect(res.body[0].courseStudents.courseId).toBe(coursesId)
+  expect(res.body[0].courseStudents.studentId).toBe(jonatahn.id)
+
+  //elimnar el estudainte 
+  await jonatahn.destroy()
+
+
 })
 
 test("Delete -> '/coursess/:id' should return statusCode 204", async () => {
