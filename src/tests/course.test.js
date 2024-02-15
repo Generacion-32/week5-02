@@ -1,5 +1,6 @@
 const request = require("supertest")
 const app = require('../app')
+require('../models')
 
 const BASE_URL = '/courses'
 
@@ -26,9 +27,14 @@ test("GET -> '/courses' should return status code 200 , res.body to be defined a
   const res = await request(app)
     .get(BASE_URL)
 
+  //console.log(res.body);
+
   expect(res.statusCode).toBe(200)
   expect(res.body).toBeDefined()
   expect(res.body).toHaveLength(1)
+
+  expect(res.body[0].students).toBeDefined()
+  expect(res.body[0].students).toHaveLength(0)
 })
 
 test("GET -> '/courses/:id', should return statusCode 200, res.body to be defined and res.body.name to be courses.name", async () => {
@@ -36,9 +42,13 @@ test("GET -> '/courses/:id', should return statusCode 200, res.body to be define
   const res = await request(app)
     .get(`${BASE_URL}/${coursesId}`)
 
+  // console.log(res.body);
+
   expect(res.status).toBe(200)
   expect(res.body).toBeDefined()
   expect(res.body.name).toBe(courses.name)
+  expect(res.body.students).toBeDefined()
+  expect(res.body.students).toHaveLength(0)
 })
 
 test("PUT -> '/courses/:id', should return statusCodew 200, res.body to be defined and res.body.name to be Analisis", async () => {
